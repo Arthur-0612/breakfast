@@ -1,5 +1,7 @@
 package com.api.v1.breakfast.Breakfast.services.Impl;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return repository.findById(id)
 				.orElseThrow(() -> new GlobalException("Employee not found", HttpStatus.BAD_REQUEST, 100));
 	}
+	
+	@Override
+	public List<Employee> findAll() {
+        return repository.findAll();
+    }
 
 	@Override
 	public Employee save(EmployeeDTO dto) {
@@ -40,7 +47,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (!employeeDb.getCpf().equals(dto.getCpf())) {
 			validateCpf(dto.getCpf());
 		}
-		return repository.save(employeeDb);
+		return repository.save(toEntity(dto));
+	}
+	
+	@Override
+	public void delete(Long id) {
+		var employeeDb = findById(id);
+		repository.delete(employeeDb);
 	}
 
 	private void validateCpf(String cpf) {
@@ -71,5 +84,4 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		return entity;
 	}
-
 }

@@ -1,8 +1,12 @@
 package com.api.v1.breakfast.Breakfast.controllers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +35,15 @@ public class EmployeeController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(service.toDto(employeeDb));
 	}
+	
+	@GetMapping("/all")
+	public ResponseEntity<List<EmployeeDTO>> findAll() {
+		List<Employee> employeeDb = service.findAll();
+		List<EmployeeDTO> employeeDto = employeeDb.stream()
+												.map(service::toDto)
+												.collect(Collectors.toList());
+		return ResponseEntity.status(HttpStatus.OK).body(employeeDto);
+	}
 
 	@PostMapping("/save")
 	public ResponseEntity<EmployeeDTO> save(@RequestBody @Valid EmployeeDTO dto) {
@@ -46,5 +59,11 @@ public class EmployeeController {
 		var employeeDb = service.update(id, dto);
 
 		return ResponseEntity.status(HttpStatus.OK).body(service.toDto(employeeDb));
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		service.delete(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
