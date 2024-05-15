@@ -26,16 +26,17 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BreakfastServiceImpl implements BreakfastService{
+public class BreakfastServiceImpl implements BreakfastService {
 
 	private final BreakfastRepository repository;
 	private final EmployeeService service;
 	private final ItemsService itemsService;
 	private final ItemBreakfastService itemsBreakfastService;
-	
+
 	@Override
 	public Breakfast findById(Long id) {
-		return repository.findById(id).orElseThrow(() -> new GlobalException("Breakfast not found", HttpStatus.BAD_GATEWAY, 100));
+		return repository.findById(id)
+				.orElseThrow(() -> new GlobalException("Breakfast not found", HttpStatus.BAD_GATEWAY, 100));
 	}
 
 	@Override
@@ -46,38 +47,38 @@ public class BreakfastServiceImpl implements BreakfastService{
 	@Override
 	public Breakfast save(BreakfastDTO dto) {
 		var breakfast = toEntity(dto);
-		
-		if( breakfast.getDateBreakfast().isBefore(LocalDate.now())) {
-			throw new GlobalException("The breakfast date cannot be less than or equal to the current date", HttpStatus.BAD_REQUEST, 200);
+
+		if (breakfast.getDateBreakfast().isBefore(LocalDate.now())) {
+			throw new GlobalException("The breakfast date cannot be less than or equal to the current date",
+					HttpStatus.BAD_REQUEST, 200);
 		}
-		
+
 		var breakfastDb = repository.save(breakfast);
-		
-		breakfastDb.getItems().forEach(elem -> {
+
+		breakfastDb.getBreakfast().forEach(elem -> {
 			elem.setBreakfast(breakfastDb);
 		});
-		
-			itemsBreakfastService.save(breakfastDb.getItems());
-			
+
+		itemsBreakfastService.save(breakfastDb.getBreakfast());
+
 		return breakfastDb;
 	}
 
 	@Override
 	public Breakfast update(Long id, BreakfastDTO dto) {
-		if(!id.equals(dto.getId())) {
+		if (!id.equals(dto.getId())) {
 			throw new GlobalException("Invalid Request", HttpStatus.BAD_REQUEST, 300);
 		}
-		
+
 		var breakfastDb = findById(id);
-			
-		
+
 		return repository.save(breakfastDb);
 	}
 
 	@Override
 	public void delete(Long id) {
 		var breakfastDb = findById(id);
-		
+
 		repository.delete(breakfastDb);
 	}
 
@@ -93,24 +94,27 @@ public class BreakfastServiceImpl implements BreakfastService{
 	@Override
 	public Breakfast toEntity(BreakfastDTO dto) {
 		var entity = new Breakfast();
-		
+
 		entity.setId(dto.getId());
 		entity.setDateBreakfast(dto.getDateBreakfast());
 		entity.setDescricao(dto.getDescricao());
 		
-		Set<ItemsBreakfast> itemsBreakfastSet =  new HashSet<>();
+		Set<ItemsBreakfast> itemsBreakfastSet = new HashSet<>();
+
+		dto.getEmployee().forEach(elem -> {
+			var itemsBreakfast = new ItemsBreakfast();
+			itemsBreakfast.setEmployee(service.findById(elem.getId()));
+			itemsBreakfastSet.add(itemsBreakfast);
+
+		});
 		
-		for (EmployeeDTO employeeDTO : dto.getEmployee()) {
-	        Employee employee = service.findById(employeeDTO.getId());
-	        for (ItemsDTO itemsDTO : dto.getItems()) {
-	            Items items = itemsService.findById(itemsDTO.getId());
-	            ItemsBreakfast itemsBreakfast = new ItemsBreakfast();
-	            itemsBreakfast.setEmployee(employee);
-	            itemsBreakfast.setItems(items);
-	            itemsBreakfastSet.add(itemsBreakfast);
-	        }
+		dto.getItems().forEach(elem -> {
+			var itemsBreakfast = new ItemsBreakfast();
+			itemsBreakfast.setItems(itemsService.findById(elem.getId()));
+			itemsBreakfastSet.add(itemsBreakfast);
+		});
 		
-	}
+		entity.setBreakfast(itemsBreakfastSet);
 		return entity;
 	}
 }
