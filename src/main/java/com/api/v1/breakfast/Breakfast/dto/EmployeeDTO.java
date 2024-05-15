@@ -1,5 +1,8 @@
 package com.api.v1.breakfast.Breakfast.dto;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -21,6 +24,8 @@ public class EmployeeDTO {
 	@NotEmpty(message = "Mandatory Field")
 	@Length(min = 11,  max = 11, message = "The length must be 11 characters")
 	private String cpf;
+	
+	private Set<String> items = new HashSet<>();
 	
 	
 }

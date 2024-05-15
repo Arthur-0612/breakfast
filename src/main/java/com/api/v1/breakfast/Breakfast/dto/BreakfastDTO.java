@@ -19,6 +19,4 @@ public class BreakfastDTO {
 
 	private Set<EmployeeDTO> employee = new HashSet<>();
 
-	private Set<ItemsDTO> items = new HashSet<>();
-
 }

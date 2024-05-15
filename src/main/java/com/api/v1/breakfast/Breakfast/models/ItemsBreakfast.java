@@ -1,6 +1,8 @@
 package com.api.v1.breakfast.Breakfast.models;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.EmbeddedId;
@@ -12,10 +14,11 @@ import lombok.Setter;
 @Setter
 @Entity
 public class ItemsBreakfast {
-
 	
     @EmbeddedId
-    private itemsBreakfastPK id = new itemsBreakfastPK();
+    private ItemsBreakfastPK id = new ItemsBreakfastPK();
+    
+    private Set<String> item;
     
     private boolean confirm;
     
@@ -28,10 +31,6 @@ public class ItemsBreakfast {
     	return id.getEmployee();
     }
     
-    public Items items() {
-    	return id.getItems();
-    }
-    
     public void setBreakfast(Breakfast breakfast) {
     	id.setBreakfast(breakfast);
     }
@@ -39,9 +38,4 @@ public class ItemsBreakfast {
     public void setEmployee(Employee employee) {
     	id.setEmployee(employee);
     }
-    
-    public void setItems(Items items) {
-    	id.setItems(items);
-    }
-    
 }

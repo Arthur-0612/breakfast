@@ -9,7 +9,7 @@ import lombok.Setter;
 @Embeddable
 @Getter
 @Setter
-public class itemsBreakfastPK {
+public class ItemsBreakfastPK {
 
     @ManyToOne
     @JoinColumn(name = "breakfast_id")
@@ -18,9 +18,4 @@ public class itemsBreakfastPK {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
-    
-    @ManyToOne
-    @JoinColumn(name = "items_id")
-    private Items items;
-	
 }

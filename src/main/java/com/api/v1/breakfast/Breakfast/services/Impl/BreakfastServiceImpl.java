@@ -10,17 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.api.v1.breakfast.Breakfast.Exceptions.GlobalException;
 import com.api.v1.breakfast.Breakfast.dto.BreakfastDTO;
-import com.api.v1.breakfast.Breakfast.dto.EmployeeDTO;
-import com.api.v1.breakfast.Breakfast.dto.ItemsDTO;
 import com.api.v1.breakfast.Breakfast.models.Breakfast;
-import com.api.v1.breakfast.Breakfast.models.Employee;
-import com.api.v1.breakfast.Breakfast.models.Items;
 import com.api.v1.breakfast.Breakfast.models.ItemsBreakfast;
 import com.api.v1.breakfast.Breakfast.repositories.BreakfastRepository;
 import com.api.v1.breakfast.Breakfast.services.BreakfastService;
 import com.api.v1.breakfast.Breakfast.services.EmployeeService;
 import com.api.v1.breakfast.Breakfast.services.ItemBreakfastService;
-import com.api.v1.breakfast.Breakfast.services.ItemsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +25,6 @@ public class BreakfastServiceImpl implements BreakfastService {
 
 	private final BreakfastRepository repository;
 	private final EmployeeService service;
-	private final ItemsService itemsService;
 	private final ItemBreakfastService itemsBreakfastService;
 
 	@Override
@@ -95,7 +89,7 @@ public class BreakfastServiceImpl implements BreakfastService {
 	public Breakfast toEntity(BreakfastDTO dto) {
 		var entity = new Breakfast();
 
-		entity.setId(dto.getId());
+		
 		entity.setDateBreakfast(dto.getDateBreakfast());
 		entity.setDescricao(dto.getDescricao());
 		
@@ -104,13 +98,7 @@ public class BreakfastServiceImpl implements BreakfastService {
 		dto.getEmployee().forEach(elem -> {
 			var itemsBreakfast = new ItemsBreakfast();
 			itemsBreakfast.setEmployee(service.findById(elem.getId()));
-			itemsBreakfastSet.add(itemsBreakfast);
-
-		});
-		
-		dto.getItems().forEach(elem -> {
-			var itemsBreakfast = new ItemsBreakfast();
-			itemsBreakfast.setItems(itemsService.findById(elem.getId()));
+			itemsBreakfast.setItem(elem.getItems());
 			itemsBreakfastSet.add(itemsBreakfast);
 		});
 		
