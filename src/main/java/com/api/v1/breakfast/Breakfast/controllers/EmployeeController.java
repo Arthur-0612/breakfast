@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,6 +43,12 @@ public class EmployeeController {
 												.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(employeeDto);
 	}
+	
+	@GetMapping("/status/{status}")
+	public ResponseEntity<List<EmployeeDTO>> findByStatus(@PathVariable String status) {
+		var employeeDb = service.findByStatus(status);
+		return ResponseEntity.status(HttpStatus.OK).body(employeeDb);
+	}
 
 	@PostMapping("/save")
 	public ResponseEntity<EmployeeDTO> save(@RequestBody @Valid EmployeeDTO dto) {
@@ -61,9 +66,9 @@ public class EmployeeController {
 		return ResponseEntity.status(HttpStatus.OK).body(service.toDto(employeeDb));
 	}
 	
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		service.delete(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	@PatchMapping("/delete/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id, @RequestBody @Valid EmployeeDTO dto) {
+		service.delete(id, dto);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

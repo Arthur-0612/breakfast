@@ -1,8 +1,5 @@
 package com.api.v1.breakfast.Breakfast.models;
 
-import java.util.List;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.EmbeddedId;
@@ -17,9 +14,7 @@ public class ItemsBreakfast {
 	
     @EmbeddedId
     private ItemsBreakfastPK id = new ItemsBreakfastPK();
-    
-    private Set<String> item;
-    
+        
     private boolean confirm;
     
     @JsonIgnore
@@ -31,6 +26,10 @@ public class ItemsBreakfast {
     	return id.getEmployee();
     }
     
+    public Item item() {
+    	return id.getItem();
+    }
+    
     public void setBreakfast(Breakfast breakfast) {
     	id.setBreakfast(breakfast);
     }
@@ -38,4 +37,8 @@ public class ItemsBreakfast {
     public void setEmployee(Employee employee) {
     	id.setEmployee(employee);
     }
+    
+    public void setItem(Item item) {
+    	id.setItem(item);
+    } 
 }

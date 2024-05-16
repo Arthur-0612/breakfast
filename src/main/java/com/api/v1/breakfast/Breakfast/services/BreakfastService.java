@@ -20,5 +20,5 @@ public interface BreakfastService {
 	BreakfastDTO toDto(Breakfast entity);
 
 	Breakfast toEntity(BreakfastDTO dto);
-	
+
 }

@@ -10,12 +10,14 @@ public interface EmployeeService {
 	Employee findById(Long id);
 
 	List<Employee> findAll();
+	
+	List<EmployeeDTO> findByStatus(String status);
 
 	Employee save(EmployeeDTO dto);
 
 	Employee update(Long id, EmployeeDTO dto);
 
-	void delete(Long id);
+	void delete(Long id, EmployeeDTO dto);
 
 	EmployeeDTO toDto(Employee entity);
 

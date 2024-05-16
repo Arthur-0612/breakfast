@@ -1,12 +1,12 @@
 package com.api.v1.breakfast.Breakfast.services.Impl;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.api.v1.breakfast.Breakfast.Exceptions.GlobalException;
 import com.api.v1.breakfast.Breakfast.dto.BreakfastDTO;
@@ -16,6 +16,7 @@ import com.api.v1.breakfast.Breakfast.repositories.BreakfastRepository;
 import com.api.v1.breakfast.Breakfast.services.BreakfastService;
 import com.api.v1.breakfast.Breakfast.services.EmployeeService;
 import com.api.v1.breakfast.Breakfast.services.ItemBreakfastService;
+import com.api.v1.breakfast.Breakfast.services.ItemService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ public class BreakfastServiceImpl implements BreakfastService {
 	private final BreakfastRepository repository;
 	private final EmployeeService service;
 	private final ItemBreakfastService itemsBreakfastService;
+	private final ItemService itemService;
 
 	@Override
 	public Breakfast findById(Long id) {
@@ -39,6 +41,7 @@ public class BreakfastServiceImpl implements BreakfastService {
 	}
 
 	@Override
+	@Transactional
 	public Breakfast save(BreakfastDTO dto) {
 		var breakfast = toEntity(dto);
 
@@ -49,11 +52,23 @@ public class BreakfastServiceImpl implements BreakfastService {
 
 		var breakfastDb = repository.save(breakfast);
 
-		breakfastDb.getBreakfast().forEach(elem -> {
-			elem.setBreakfast(breakfastDb);
+		List<ItemsBreakfast> itemsBreakfastList = new ArrayList<>();
+
+		dto.getEmployee().forEach(elem -> {
+			var employee = service.findById(elem.getId());
+			elem.getItems().forEach(item -> {
+				var itemsBreakfast = new ItemsBreakfast();
+				itemsBreakfast.setBreakfast(breakfastDb);
+				itemsBreakfast.setEmployee(employee);
+				itemsBreakfast.setItem(itemService.findById(item.getId()));
+
+				itemsBreakfastList.add(itemsBreakfast);
+			});
 		});
 
-		itemsBreakfastService.save(breakfastDb.getBreakfast());
+		List<ItemsBreakfast> itemsBreakfast = itemsBreakfastService.saveAll(itemsBreakfastList);
+
+		breakfastDb.setBreakfast(itemsBreakfast);
 
 		return breakfastDb;
 	}
@@ -88,21 +103,9 @@ public class BreakfastServiceImpl implements BreakfastService {
 	@Override
 	public Breakfast toEntity(BreakfastDTO dto) {
 		var entity = new Breakfast();
-
-		
 		entity.setDateBreakfast(dto.getDateBreakfast());
 		entity.setDescricao(dto.getDescricao());
-		
-		Set<ItemsBreakfast> itemsBreakfastSet = new HashSet<>();
 
-		dto.getEmployee().forEach(elem -> {
-			var itemsBreakfast = new ItemsBreakfast();
-			itemsBreakfast.setEmployee(service.findById(elem.getId()));
-			itemsBreakfast.setItem(elem.getItems());
-			itemsBreakfastSet.add(itemsBreakfast);
-		});
-		
-		entity.setBreakfast(itemsBreakfastSet);
 		return entity;
 	}
 }

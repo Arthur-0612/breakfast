@@ -18,4 +18,9 @@ public class ItemsBreakfastPK {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
+
 }

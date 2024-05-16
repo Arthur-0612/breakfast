@@ -1,6 +1,7 @@
 package com.api.v1.breakfast.Breakfast.services.Impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return repository.findById(id)
 				.orElseThrow(() -> new GlobalException("Employee not found", HttpStatus.BAD_REQUEST, 100));
 	}
-	
+
 	@Override
 	public List<Employee> findAll() {
-        return repository.findAll();
-    }
+		return repository.findAll();
+	}
+
+	@Override
+	public List<EmployeeDTO> findByStatus(String status) {
+		return repository.findByStatus(status).stream().map(this::toDto).collect(Collectors.toList());
+	}
 
 	@Override
 	public Employee save(EmployeeDTO dto) {
@@ -49,11 +55,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		return repository.save(toEntity(dto));
 	}
-	
+
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id, EmployeeDTO dto) {
 		var employeeDb = findById(id);
-		repository.delete(employeeDb);
+		employeeDb.setStatus(dto.getStatus());
+		repository.save(employeeDb);
 	}
 
 	private void validateCpf(String cpf) {
@@ -71,6 +78,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		dto.setId(entity.getId());
 		dto.setName(entity.getName());
 		dto.setCpf(entity.getCpf());
+		dto.setStatus(entity.getStatus());
 		return dto;
 	}
 
@@ -81,6 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		entity.setId(dto.getId());
 		entity.setName(dto.getName());
 		entity.setCpf(dto.getCpf());
+		entity.setStatus(dto.getStatus());
 
 		return entity;
 	}

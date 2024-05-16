@@ -23,9 +23,10 @@ public class EmployeeDTO {
 	@CPF
 	@NotEmpty(message = "Mandatory Field")
 	@Length(min = 11,  max = 11, message = "The length must be 11 characters")
-	private String cpf;
+	private String cpf;	
+
+	private String status;
 	
-	private Set<String> items = new HashSet<>();
-	
+	private Set<ItemDTO> items = new HashSet<ItemDTO>();
 	
 }
