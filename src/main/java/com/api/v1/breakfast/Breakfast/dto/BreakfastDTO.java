@@ -15,7 +15,7 @@ public class BreakfastDTO {
 
 	private LocalDate dateBreakfast;
 	
-	private String descricao;
+	private String description;
 
 	private Set<EmployeeDTO> employee = new HashSet<>();
 

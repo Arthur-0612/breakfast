@@ -1,6 +1,6 @@
 package com.api.v1.breakfast.Breakfast.controllers;
 
-import java.util.List;
+import java.util.List;import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +36,13 @@ public class BreakfastController {
 	}
 
 	@GetMapping("/all")
-	public ResponseEntity<List<Breakfast>> findAll() {
-		return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
+	public ResponseEntity<List<BreakfastDTO>> findAll() {
+		var brekfastDb = service.findAll();
+		var breakfastDto = brekfastDb.stream()
+								.map(service::toDto)
+								.collect(Collectors.toList());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(breakfastDto);
 	}
 	
 	@PutMapping("/update/{id}")

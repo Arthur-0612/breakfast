@@ -1,6 +1,7 @@
 package com.api.v1.breakfast.Breakfast.controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.v1.breakfast.Breakfast.dto.EmployeeDTO;
 import com.api.v1.breakfast.Breakfast.dto.ItemDTO;
+import com.api.v1.breakfast.Breakfast.models.Employee;
 import com.api.v1.breakfast.Breakfast.models.Item;
 import com.api.v1.breakfast.Breakfast.services.ItemService;
 
@@ -33,10 +36,12 @@ public class ItemController {
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<Item>> findAll() {
-		var itemDb = service.findAll();
-
-		return ResponseEntity.status(HttpStatus.OK).body(itemDb);
+	public ResponseEntity<List<ItemDTO>> findAll() {
+		List<Item> itemDb = service.findAll();
+		List<ItemDTO> itemDto = itemDb.stream()
+				.map(service::toDto)
+				.collect(Collectors.toList());
+		return ResponseEntity.status(HttpStatus.OK).body(itemDto);
 	}
 	
 	@PostMapping("/save")

@@ -2,7 +2,9 @@ package com.api.v1.breakfast.Breakfast.services.Impl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,35 +45,44 @@ public class BreakfastServiceImpl implements BreakfastService {
 	@Override
 	@Transactional
 	public Breakfast save(BreakfastDTO dto) {
-		var breakfast = toEntity(dto);
+	    var breakfast = toEntity(dto);
 
-		if (breakfast.getDateBreakfast().isBefore(LocalDate.now())) {
-			throw new GlobalException("The breakfast date cannot be less than or equal to the current date",
-					HttpStatus.BAD_REQUEST, 200);
-		}
+	    if (breakfast.getDateBreakfast().isBefore(LocalDate.now())) {
+	        throw new GlobalException("The breakfast date cannot be less than or equal to the current date",
+	                HttpStatus.BAD_REQUEST, 200);
+	    }
 
-		var breakfastDb = repository.save(breakfast);
+	    var breakfastDb = repository.save(breakfast);
 
-		List<ItemsBreakfast> itemsBreakfastList = new ArrayList<>();
+	    List<ItemsBreakfast> itemsBreakfastList = new ArrayList<>();
+	    Set<String> addedItems = new HashSet<>();
 
-		dto.getEmployee().forEach(elem -> {
-			var employee = service.findById(elem.getId());
-			elem.getItems().forEach(item -> {
-				var itemsBreakfast = new ItemsBreakfast();
-				itemsBreakfast.setBreakfast(breakfastDb);
-				itemsBreakfast.setEmployee(employee);
-				itemsBreakfast.setItem(itemService.findById(item.getId()));
+	    dto.getEmployee().forEach(elem -> {
+	        var employee = service.findById(elem.getId());
+	        elem.getItems().forEach(item -> {
+	            String itemKey = employee.getId() + "-" + item.getId();
+	            if (addedItems.contains(itemKey)) {
+	                throw new GlobalException("Item with ID " + item.getId() + " already added for employee " + employee.getId(),
+	                        HttpStatus.BAD_REQUEST, 200);
+	            }
+	            addedItems.add(itemKey);
 
-				itemsBreakfastList.add(itemsBreakfast);
-			});
-		});
+	            var itemsBreakfast = new ItemsBreakfast();
+	            itemsBreakfast.setBreakfast(breakfastDb);
+	            itemsBreakfast.setEmployee(employee);
+	            itemsBreakfast.setItem(itemService.findById(item.getId()));
 
-		List<ItemsBreakfast> itemsBreakfast = itemsBreakfastService.saveAll(itemsBreakfastList);
+	            itemsBreakfastList.add(itemsBreakfast);
+	        });
+	    });
 
-		breakfastDb.setBreakfast(itemsBreakfast);
+	    List<ItemsBreakfast> itemsBreakfast = itemsBreakfastService.saveAll(itemsBreakfastList);
 
-		return breakfastDb;
+	    breakfastDb.setBreakfast(itemsBreakfast);
+
+	    return breakfastDb;
 	}
+
 
 	@Override
 	public Breakfast update(Long id, BreakfastDTO dto) {
@@ -96,7 +107,7 @@ public class BreakfastServiceImpl implements BreakfastService {
 		var dto = new BreakfastDTO();
 		dto.setId(entity.getId());
 		dto.setDateBreakfast(entity.getDateBreakfast());
-		dto.setDescricao(entity.getDescricao());
+		dto.setDescription(entity.getDescription());
 		return dto;
 	}
 
@@ -104,7 +115,7 @@ public class BreakfastServiceImpl implements BreakfastService {
 	public Breakfast toEntity(BreakfastDTO dto) {
 		var entity = new Breakfast();
 		entity.setDateBreakfast(dto.getDateBreakfast());
-		entity.setDescricao(dto.getDescricao());
+		entity.setDescription(dto.getDescription());
 
 		return entity;
 	}

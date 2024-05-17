@@ -25,7 +25,7 @@ public class Breakfast {
 	
 	private LocalDate dateBreakfast;
 
-	private String descricao;
+	private String description;
 
 	@OneToMany(mappedBy="id.breakfast")
     private List<ItemsBreakfast> breakfast = new ArrayList<>();
