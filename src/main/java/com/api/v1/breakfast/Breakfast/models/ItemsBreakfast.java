@@ -12,7 +12,9 @@ import lombok.Setter;
 @Entity
 public class ItemsBreakfast {
 	
+	
     @EmbeddedId
+    @JsonIgnore
     private ItemsBreakfastPK id = new ItemsBreakfastPK();
         
     private boolean confirm;

@@ -36,13 +36,13 @@ public class BreakfastController {
 	}
 
 	@GetMapping("/all")
-	public ResponseEntity<List<BreakfastDTO>> findAll() {
+	public ResponseEntity<List<Breakfast>> findAll() {
 		var brekfastDb = service.findAll();
 		var breakfastDto = brekfastDb.stream()
 								.map(service::toDto)
 								.collect(Collectors.toList());
 		
-		return ResponseEntity.status(HttpStatus.OK).body(breakfastDto);
+		return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
 	}
 	
 	@PutMapping("/update/{id}")
