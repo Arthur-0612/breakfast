@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,12 +24,11 @@ public class Breakfast {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private LocalDate dateBreakfast;
 
 	private String description;
 
-	@OneToMany(mappedBy="id.breakfast", fetch = FetchType.EAGER)
-    private List<ItemsBreakfast> breakfast = new ArrayList<>();
-	
+	@OneToMany(mappedBy = "breakfast", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Employee> employees = new ArrayList<>();
 }

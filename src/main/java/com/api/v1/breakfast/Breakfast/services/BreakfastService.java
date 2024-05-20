@@ -7,18 +7,17 @@ import com.api.v1.breakfast.Breakfast.models.Breakfast;
 
 public interface BreakfastService {
 
-	Breakfast findById(Long id);
+    Breakfast findById(Long id);
 
-	List<Breakfast> findAll();
+    List<BreakfastDTO> findAll();
 
-	Breakfast save(BreakfastDTO dto);
+    Breakfast save(BreakfastDTO dto);
 
-	Breakfast update(Long id, BreakfastDTO dto);
+    Breakfast update(Long id, BreakfastDTO dto);
 
-	void delete(Long id);
+    void delete(Long id);
 
-	BreakfastDTO toDto(Breakfast entity);
+    BreakfastDTO toDto(Breakfast entity);
 
-	Breakfast toEntity(BreakfastDTO dto);
-
+    Breakfast toEntity(BreakfastDTO dto);
 }
